@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.3
-Release:        5%{?dist}
+Release:        7%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -23,6 +23,8 @@ Requires:       keyutils-libs
 Obsoletes:      nuxwdog-client
 
 Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
+Patch0:         nuxwdog-Allow-unlimited-conf-line-length.patch
+Patch1:         nuxwdog-set-uid.patch
 
 # Note: there is an rpmlint warning about Nuxwdogclient.so being a private-shared-object-provide
 # This would ordinarily be fixed by calling the macro perl_default_filter, but 
@@ -68,6 +70,8 @@ The nuxwdog-client-perl package contains a perl interface to nuxwdog.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 ant \
@@ -138,6 +142,12 @@ rm -rf %{buildroot}
 %exclude %dir %{perl_vendorarch}/auto/
 
 %changelog
+* Wed Jan 17 2018 Ade Lee <alee@redhat.com> 1.0.3-7
+- Resolves: 1534030 - add option to set process uid
+
+* Thu Nov 2 2017 Ade Lee <alee@redhat.com> 1.0.3-6
+- Resolves: rhbz#1503753 - nuxwdog is cutting off long ExeArgs
+
 * Fri Jun 24 2016 Ade Lee <alee@redhat.com> 1.0.3-5
 - Resolves: rhbz#1283272 - Move perl bindings to a subpackage
 
