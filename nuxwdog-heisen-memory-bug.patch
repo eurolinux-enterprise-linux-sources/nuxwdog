@@ -1,0 +1,47 @@
+From 63d0cb4948d240068be52c5b0f701a9524320d4d Mon Sep 17 00:00:00 2001
+From: Dinesh Prasanth M K <dmoluguw@redhat.com>
+Date: Thu, 16 Aug 2018 12:23:31 -0400
+Subject: [PATCH] Fixing memory issue in NHSM-OCS
+
+This fixes the heisen memory bug
+https://pagure.io/nuxwdog/issue/8
+
+Signed-off-by: Dinesh Prasanth M K <dmoluguw@redhat.com>
+---
+ src/com/redhat/nuxwdog/wdpwd.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/com/redhat/nuxwdog/wdpwd.cpp b/src/com/redhat/nuxwdog/wdpwd.cpp
+index 1ff7829..09191fc 100644
+--- a/src/com/redhat/nuxwdog/wdpwd.cpp
++++ b/src/com/redhat/nuxwdog/wdpwd.cpp
+@@ -111,7 +111,7 @@ watchdog_pwd_encrypt(char *pwdvalue, pwdenc_t *pwdcrypt)
+ 
+     int len = strlen(pwdvalue);
+     {
+-        if ((pwdcrypt->ptr = (void *)malloc(len)) == NULL)
++        if ((pwdcrypt->ptr = (void *)malloc(len + 1)) == NULL)
+             return;
+     
+         pwdcrypt->len = len;
+@@ -247,7 +247,7 @@ int watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
+              * Already have this password saved, so server must be
+              * reprompting.  Replace the old value with the new value.
+              */
+-            char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
++            char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX) + 1);
+             sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
+             pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
+                 strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
+@@ -270,7 +270,7 @@ int watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
+     pwdp->pwdname = strdup(pwdname);
+     pwdp->serial = serial;
+ 
+-    char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
++    char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX) + 1);
+     sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
+     pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
+         strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
+-- 
+2.14.4
+

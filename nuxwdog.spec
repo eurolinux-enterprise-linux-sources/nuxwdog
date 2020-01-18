@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -25,6 +25,7 @@ Obsoletes:      nuxwdog-client
 Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
 Patch0:         nuxwdog-Allow-unlimited-conf-line-length.patch
 Patch1:         nuxwdog-set-uid.patch
+Patch2:         nuxwdog-heisen-memory-bug.patch
 
 # Note: there is an rpmlint warning about Nuxwdogclient.so being a private-shared-object-provide
 # This would ordinarily be fixed by calling the macro perl_default_filter, but 
@@ -72,6 +73,7 @@ The nuxwdog-client-perl package contains a perl interface to nuxwdog.
 %setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 ant \
@@ -142,6 +144,10 @@ rm -rf %{buildroot}
 %exclude %dir %{perl_vendorarch}/auto/
 
 %changelog
+* Mon Aug 20 2018 Dogtag Team <pki-devel@redhat.com> 1.0.3-8
+- Resolves: rhbz #1615617 - nuxwdog systemd - memory error
+  when starting subCA (dmoluguw)
+
 * Wed Jan 17 2018 Ade Lee <alee@redhat.com> 1.0.3-7
 - Resolves: 1534030 - add option to set process uid
 
